@@ -38,18 +38,24 @@ public class PhystatsParser {
             String[] valueSplits = s.split(":");
             String[] actualValues = valueSplits[1].trim().split("\\s+");
             resultMap = new HashMap<>();
-            rawMetrics = new RawMetrics();
+
             metrics = new Metrics(serialNumber,Long.parseLong(valueSplits[0]));
-            rawMetrics.setMetrics(metrics);
+
             for(int i =0;i <topNames.length; i++) {
+                rawMetrics = new RawMetrics();
+                rawMetrics.setMetrics(metrics);
                 if (actualValues[i].equalsIgnoreCase("nan")) {
                     resultMap.put(topNames[i], Double.NaN);
+                    rawMetrics.setKey(topNames[i]);
+                    rawMetrics.setValue(Double.NaN);
                 } else {
                     resultMap.put(topNames[i], Double.parseDouble(actualValues[i]));
+                    rawMetrics.setKey(topNames[i]);
+                    rawMetrics.setValue(Double.parseDouble(actualValues[i]));
                 }
+                rawMetricsList.add(rawMetrics);
             }
-            rawMetrics.setData(resultMap);
-            rawMetricsList.add(rawMetrics);
+
 
         }
         return rawMetricsList;
@@ -68,18 +74,24 @@ public class PhystatsParser {
             String[] valueSplits = s.split(":");
             String[] actualValues = valueSplits[1].trim().split("\\s+");
             resultMap = new HashMap<>();
-            rawMetrics = new RawMetrics();
-            metrics = new Metrics(serialNumber,startTime +=10L);
-            rawMetrics.setMetrics(metrics);
+
+            metrics = new Metrics(serialNumber,Long.parseLong(valueSplits[0]));
+
             for(int i =0;i <topNames.length; i++) {
+                rawMetrics = new RawMetrics();
+                rawMetrics.setMetrics(metrics);
                 if (actualValues[i].equalsIgnoreCase("nan")) {
                     resultMap.put(topNames[i], Double.NaN);
+                    rawMetrics.setKey(topNames[i]);
+                    rawMetrics.setValue(Double.NaN);
                 } else {
                     resultMap.put(topNames[i], Double.parseDouble(actualValues[i]));
+                    rawMetrics.setKey(topNames[i]);
+                    rawMetrics.setValue(Double.parseDouble(actualValues[i]));
                 }
+                rawMetricsList.add(rawMetrics);
             }
-            rawMetrics.setData(resultMap);
-            rawMetricsList.add(rawMetrics);
+
 
         }
         return rawMetricsList;

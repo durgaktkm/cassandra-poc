@@ -32,7 +32,7 @@ public class RandomDataPush {
             intermediateObject= new ArrayList<>();
             intermediateObject.add(rawMetrics.getMetrics().getSerialNumber());
             intermediateObject.add(rawMetrics.getMetrics().getEventTime());
-            intermediateObject.add(rawMetrics.getData());
+           // intermediateObject.add(rawMetrics.getData());
             metricsToSave.add(intermediateObject);
         }
         operations.ingest(cqlIngest,metricsToSave);

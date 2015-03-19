@@ -20,19 +20,22 @@ public class JsonFile {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(NMSBackendConfig.class);
         CassandraOperations operations= ctx.getBean(CassandraOperations.class);
         PhystatsParser phystatsParser = ctx.getBean(PhystatsParser.class);
-        URL url = Resources.getResource("Phystats_test.json");
+        URL url = Resources.getResource("Phystats_2.json");
         String text = Resources.toString(url, Charsets.UTF_8);
         //System.out.println(text);
         String events = phystatsParser.parseJson(text).asText();
         List<RawMetrics> rawMetricsList = phystatsParser.getRawMetrics("xx123", events);
-        String cqlIngest = "insert into raw_metrics(serialNumber,event_time,data)values(?,?,?)";
+        String cqlIngest = "insert into raw_metrics(serialNumber,eventTime,metricName,key,value)values(?,?,?,?,?)";
         List<List<?>> metricsToSave = new ArrayList<List<?>>();
         List<Object> intermediateObject = null;
         for(RawMetrics rawMetrics:rawMetricsList){
             intermediateObject= new ArrayList<>();
             intermediateObject.add(rawMetrics.getMetrics().getSerialNumber());
             intermediateObject.add(rawMetrics.getMetrics().getEventTime());
-            intermediateObject.add(rawMetrics.getData());
+            intermediateObject.add("phystats");
+
+            intermediateObject.add(rawMetrics.getKey());
+            intermediateObject.add(rawMetrics.getValue());
             metricsToSave.add(intermediateObject);
         }
         operations.ingest(cqlIngest,metricsToSave);

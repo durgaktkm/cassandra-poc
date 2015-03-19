@@ -16,7 +16,11 @@ public class RawMetrics {
     @PrimaryKey
     private Metrics metrics;
     @Column
-    private Map<String,Double> data;
+    private String metricName ;
+    @Column
+    private String key;
+    @Column
+    private Double value;
 
     public Metrics getMetrics() {
         return metrics;
@@ -26,11 +30,27 @@ public class RawMetrics {
         this.metrics = metrics;
     }
 
-    public Map<String, Double> getData() {
-        return data;
+    public String getMetricName() {
+        return metricName;
     }
 
-    public void setData(Map<String, Double> data) {
-        this.data = data;
+    public void setMetricName(String metricName) {
+        this.metricName = metricName;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public Double getValue() {
+        return value;
+    }
+
+    public void setValue(Double value) {
+        this.value = value;
     }
 }

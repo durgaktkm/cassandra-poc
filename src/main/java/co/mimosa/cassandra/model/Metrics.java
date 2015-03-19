@@ -15,7 +15,7 @@ import java.util.Date;
 public class Metrics implements Serializable{
     @PrimaryKeyColumn(name = "serialNumber", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
     private String serialNumber;
-    @PrimaryKeyColumn(name = "event_time", ordinal = 1, type = PrimaryKeyType.PARTITIONED)
+    @PrimaryKeyColumn(name = "eventTime", ordinal = 1, type = PrimaryKeyType.PARTITIONED)
     private long eventTime;
 
     public Metrics(String serialNumber, long eventTime) {

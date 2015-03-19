@@ -38,7 +38,7 @@ public class AsyncCassandraOperations {
             intermediateObject = new ArrayList<>();
             intermediateObject.add(rawMetrics.getMetrics().getSerialNumber());
             intermediateObject.add(rawMetrics.getMetrics().getEventTime());
-            intermediateObject.add(rawMetrics.getData());
+           // intermediateObject.add(rawMetrics.getData());
             metricsToSave.add(intermediateObject);
             result = true;
 
@@ -61,7 +61,7 @@ public class AsyncCassandraOperations {
         PreparedStatement ps = session.prepare("insert into raw_metrics(serialNumber,event_time,data)values(?,?,?)");
         BatchStatement batch = new BatchStatement();
         for (RawMetrics rawMetrics : rawMetricsList) {
-            batch.add(ps.bind(rawMetrics.getMetrics().getSerialNumber(), rawMetrics.getMetrics().getEventTime(), rawMetrics.getData()));
+          //  batch.add(ps.bind(rawMetrics.getMetrics().getSerialNumber(), rawMetrics.getMetrics().getEventTime(), rawMetrics.getData()));
 
         }
 
