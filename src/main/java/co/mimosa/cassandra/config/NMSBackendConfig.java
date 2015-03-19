@@ -2,6 +2,8 @@ package co.mimosa.cassandra.config;
 
 import co.mimosa.cassandra.parser.PhystatsParser;
 import co.mimosa.cassandra.repository.RawMetricsRepository;
+import com.datastax.driver.core.HostDistance;
+import com.datastax.driver.core.PoolingOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cassandra.config.java.AbstractSessionConfiguration;
 import org.springframework.cassandra.core.CqlOperations;
@@ -51,7 +53,7 @@ public class NMSBackendConfig  {
         CassandraClusterFactoryBean cluster = new CassandraClusterFactoryBean();
         cluster.setContactPoints(env.getProperty("cassandra.contactpoints"));
         cluster.setPort(Integer.parseInt(env.getProperty("cassandra.port")));
-
+        cluster.setPoolingOptions(new PoolingOptions().setMaxConnectionsPerHost(HostDistance.LOCAL, 100));
         return cluster;
     }
 
