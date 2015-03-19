@@ -1,3 +1,4 @@
+import co.mimosa.cassandra.AsyncCassandraOperations;
 import co.mimosa.cassandra.config.NMSBackendConfig;
 import co.mimosa.cassandra.model.RawMetrics;
 import co.mimosa.cassandra.parser.PhystatsParser;
@@ -11,31 +12,37 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Created by ramdurga on 3/18/15.
  */
 public class LoadTest {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(NMSBackendConfig.class);
         CassandraOperations operations= ctx.getBean(CassandraOperations.class);
         PhystatsParser phystatsParser = ctx.getBean(PhystatsParser.class);
+        AsyncCassandraOperations asyncCassandraOperations = ctx.getBean(AsyncCassandraOperations.class);
         URL url = Resources.getResource("Phystats.json");
         String text = Resources.toString(url, Charsets.UTF_8);
         //System.out.println(text);
+        long epochStartTime = 1395201980;
         String events = phystatsParser.parseJson(text).asText();
-        List<RawMetrics> rawMetricsList = phystatsParser.getRawMetrics("xx123", events);
-        String cqlIngest = "insert into raw_metrics(serialNumber,event_time,data)values(?,?,?)";
-        List<List<?>> metricsToSave = new ArrayList<List<?>>();
-        List<Object> intermediateObject = null;
-        for(RawMetrics rawMetrics:rawMetricsList){
-            intermediateObject= new ArrayList<>();
-            intermediateObject.add(rawMetrics.getMetrics().getSerialNumber());
-            intermediateObject.add(rawMetrics.getMetrics().getEventTime());
-            intermediateObject.add(rawMetrics.getData());
-            metricsToSave.add(intermediateObject);
+        List<Future<Boolean>> resultList = new ArrayList<>();
+        long startTime = System.currentTimeMillis();
+        for(int i=0;i<5000;i++) {
+            Future<Boolean> booleanFuture = asyncCassandraOperations.sendAsyncBatch("XXX_" + i, events, epochStartTime += 500);
+
+            resultList.add(booleanFuture);
         }
-        operations.ingest(cqlIngest,metricsToSave);
+
+        for(Future<Boolean> result:resultList){
+            result.get();
+        }
+
+        long endTime = System.currentTimeMillis();
+        System.out.println(endTime-startTime);
         System.out.println("Hurray");
     }
 }

@@ -1,5 +1,6 @@
 package co.mimosa.cassandra.config;
 
+import co.mimosa.cassandra.AsyncCassandraOperations;
 import co.mimosa.cassandra.parser.PhystatsParser;
 import co.mimosa.cassandra.repository.RawMetricsRepository;
 import com.datastax.driver.core.HostDistance;
@@ -23,10 +24,13 @@ import org.springframework.data.cassandra.mapping.BasicCassandraMappingContext;
 import org.springframework.data.cassandra.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 /**
  * Created by ramdurga on 3/18/15.
@@ -36,6 +40,7 @@ import java.util.Map;
 @EnableCassandraRepositories(basePackages = { "co.mimosa.cassandra.repository" })
 //@EnableJpaRepositories("co.mimosa.cassandra.repository")
 //@EnableJpaRepositories
+@EnableAsync
 public class NMSBackendConfig  {
     @Autowired
     private Environment env;
@@ -53,7 +58,7 @@ public class NMSBackendConfig  {
         CassandraClusterFactoryBean cluster = new CassandraClusterFactoryBean();
         cluster.setContactPoints(env.getProperty("cassandra.contactpoints"));
         cluster.setPort(Integer.parseInt(env.getProperty("cassandra.port")));
-        cluster.setPoolingOptions(new PoolingOptions().setMaxConnectionsPerHost(HostDistance.LOCAL, 100));
+        cluster.setPoolingOptions(new PoolingOptions().setMaxConnectionsPerHost(HostDistance.LOCAL, 50));
         return cluster;
     }
 
@@ -88,6 +93,20 @@ public class NMSBackendConfig  {
     @Bean
     public PhystatsParser getPhystatsParser() throws Exception {
         return new PhystatsParser();
+    }
+    @Bean
+    public AsyncCassandraOperations getAsyncCassandraSave() throws Exception {
+        return new AsyncCassandraOperations();
+    }
+
+    public Executor getAsyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(8);
+        executor.setMaxPoolSize(8);
+        executor.setQueueCapacity(500);
+        executor.setThreadNamePrefix("MyExecutor-");
+        executor.initialize();
+        return executor;
     }
 
 }

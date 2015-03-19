@@ -20,7 +20,7 @@ public class JsonFile {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(NMSBackendConfig.class);
         CassandraOperations operations= ctx.getBean(CassandraOperations.class);
         PhystatsParser phystatsParser = ctx.getBean(PhystatsParser.class);
-        URL url = Resources.getResource("Phystats.json");
+        URL url = Resources.getResource("Phystats_test.json");
         String text = Resources.toString(url, Charsets.UTF_8);
         //System.out.println(text);
         String events = phystatsParser.parseJson(text).asText();

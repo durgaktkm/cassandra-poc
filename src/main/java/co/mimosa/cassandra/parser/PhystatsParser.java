@@ -61,7 +61,7 @@ public class PhystatsParser {
         Metrics metrics = null;
         Map<String,Double> resultMap = null;
         String[] topSplits = events.split("##");
-        System.out.println(topSplits[0]);
+       // System.out.println(topSplits[0]);
         String[] topNames = topSplits[0].trim().split("\\s+");
         String[] values = topSplits[1].trim().split("#");
         for(String s:values){
@@ -69,7 +69,7 @@ public class PhystatsParser {
             String[] actualValues = valueSplits[1].trim().split("\\s+");
             resultMap = new HashMap<>();
             rawMetrics = new RawMetrics();
-            metrics = new Metrics(serialNumber,Long.parseLong(valueSplits[0]));
+            metrics = new Metrics(serialNumber,startTime +=10L);
             rawMetrics.setMetrics(metrics);
             for(int i =0;i <topNames.length; i++) {
                 if (actualValues[i].equalsIgnoreCase("nan")) {
