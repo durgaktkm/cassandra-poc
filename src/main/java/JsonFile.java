@@ -34,8 +34,8 @@ public class JsonFile {
             intermediateObject.add(rawMetrics.getMetrics().getEventTime());
             intermediateObject.add("Phystats");
 
-            intermediateObject.add(rawMetrics.getKey());
-            intermediateObject.add(rawMetrics.getValue());
+//            intermediateObject.add(rawMetrics.getKey());
+//            intermediateObject.add(rawMetrics.getValue());
             metricsToSave.add(intermediateObject);
         }
         operations.ingest(cqlIngest,metricsToSave);

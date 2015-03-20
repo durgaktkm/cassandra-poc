@@ -34,8 +34,8 @@ public class LoadTest {
         List<Future<Boolean>> resultList = new ArrayList<>();
         long startTime = System.currentTimeMillis();
         List<Future<?>> submitList = new ArrayList<>();
-        for(int i =0;i<2;i++){
-            Future<?> submit = executorService.submit(new MyRunner(i + 1000, asyncCassandraOperations, 2, 2, events, epochStartTime + 5000));
+        for(int i =0;i<10;i++){
+            Future<?> submit = executorService.submit(new MyRunner(i + 1000, asyncCassandraOperations, 10, 1000, events, epochStartTime + 5000));
             submitList.add(submit);
 
         }

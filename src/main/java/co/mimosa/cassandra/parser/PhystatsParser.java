@@ -46,12 +46,12 @@ public class PhystatsParser {
                 rawMetrics.setMetrics(metrics);
                 if (actualValues[i].equalsIgnoreCase("nan")) {
                     resultMap.put(topNames[i], Double.NaN);
-                    rawMetrics.setKey(topNames[i]);
-                    rawMetrics.setValue(Double.NaN);
+//                    rawMetrics.setKey(topNames[i]);
+//                    rawMetrics.setValue(Double.NaN);
                 } else {
                     resultMap.put(topNames[i], Double.parseDouble(actualValues[i]));
-                    rawMetrics.setKey(topNames[i]);
-                    rawMetrics.setValue(Double.parseDouble(actualValues[i]));
+//                    rawMetrics.setKey(topNames[i]);
+//                    rawMetrics.setValue(Double.parseDouble(actualValues[i]));
                 }
                 rawMetricsList.add(rawMetrics);
             }
@@ -60,14 +60,14 @@ public class PhystatsParser {
         }
         return rawMetricsList;
     }
-    public List<RawMetrics> getRawMetricsForHardCodedTimeStamps(String serialNumber,String events,long startTime) throws IOException {
+    public List<Map<String,Double>> getRawMetricsForHardCodedTimeStamps(String serialNumber,String events,long startTime) throws IOException {
 
-        List<RawMetrics> rawMetricsList = new ArrayList<>();
+        List<Map<String,Double>> rawMetricsList = new ArrayList<>();
         RawMetrics rawMetrics = null;
         Metrics metrics = null;
         Map<String,Double> resultMap = null;
         String[] topSplits = events.split("##");
-       // System.out.println(topSplits[0]);
+        //System.out.println(topSplits[0]);
         String[] topNames = topSplits[0].trim().split("\\s+");
         String[] values = topSplits[1].trim().split("#");
         for(String s:values){
@@ -75,23 +75,18 @@ public class PhystatsParser {
             String[] actualValues = valueSplits[1].trim().split("\\s+");
             resultMap = new HashMap<>();
 
-            metrics = new Metrics(serialNumber,Long.parseLong(valueSplits[0]));
-
             for(int i =0;i <topNames.length; i++) {
-                rawMetrics = new RawMetrics();
-                rawMetrics.setMetrics(metrics);
+
                 if (actualValues[i].equalsIgnoreCase("nan")) {
                     resultMap.put(topNames[i], Double.NaN);
-                    rawMetrics.setKey(topNames[i]);
-                    rawMetrics.setValue(Double.NaN);
+
                 } else {
                     resultMap.put(topNames[i], Double.parseDouble(actualValues[i]));
-                    rawMetrics.setKey(topNames[i]);
-                    rawMetrics.setValue(Double.parseDouble(actualValues[i]));
-                }
-                rawMetricsList.add(rawMetrics);
-            }
 
+                }
+
+            }
+            rawMetricsList.add(resultMap);
 
         }
         return rawMetricsList;
