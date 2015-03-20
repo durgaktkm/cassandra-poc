@@ -34,9 +34,11 @@ public class LoadTest {
         List<Future<Boolean>> resultList = new ArrayList<>();
         long startTime = System.currentTimeMillis();
         List<Future<?>> submitList = new ArrayList<>();
+        int serialNumber =1000000;
         for(int i =0;i<10;i++){
-            Future<?> submit = executorService.submit(new MyRunner(i + 1000, asyncCassandraOperations, 10, 1000, events, epochStartTime + 5000));
+            Future<?> submit = executorService.submit(new MyRunner( serialNumber , asyncCassandraOperations, 10, 1000, events, epochStartTime + 5000));
             submitList.add(submit);
+            serialNumber +=serialNumber;
 
         }
         for(Future<?> future:submitList){
@@ -80,7 +82,7 @@ public class LoadTest {
     public void run(){
         for(int i=0;i<numOfTimes;i++){
             try {
-                Future<Boolean> booleanFuture = asyncCassandraOperations.callBatchAsync(batchSize, serialNumberToStart, event, timeStampToStart);
+                Future<Boolean> booleanFuture = asyncCassandraOperations.callBatchAsync(batchSize, serialNumberToStart+i, event, timeStampToStart);
                 booleanFuture.get();
             } catch (IOException e) {
                 e.printStackTrace();
