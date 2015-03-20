@@ -32,7 +32,7 @@ public class JsonFile {
             intermediateObject= new ArrayList<>();
             intermediateObject.add(rawMetrics.getMetrics().getSerialNumber());
             intermediateObject.add(rawMetrics.getMetrics().getEventTime());
-            intermediateObject.add("phystats");
+            intermediateObject.add("Phystats");
 
             intermediateObject.add(rawMetrics.getKey());
             intermediateObject.add(rawMetrics.getValue());

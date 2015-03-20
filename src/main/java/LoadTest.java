@@ -1,6 +1,5 @@
 import co.mimosa.cassandra.AsyncCassandraOperations;
 import co.mimosa.cassandra.config.NMSBackendConfig;
-import co.mimosa.cassandra.model.RawMetrics;
 import co.mimosa.cassandra.parser.PhystatsParser;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
@@ -13,6 +12,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
@@ -29,20 +30,65 @@ public class LoadTest {
         //System.out.println(text);
         long epochStartTime = 1395201980;
         String events = phystatsParser.parseJson(text).asText();
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
         List<Future<Boolean>> resultList = new ArrayList<>();
         long startTime = System.currentTimeMillis();
-        for(int i=0;i<5000;i++) {
-            Future<Boolean> booleanFuture = asyncCassandraOperations.sendAsyncBatch("XXX_" + i, events, epochStartTime += 500);
+        List<Future<?>> submitList = new ArrayList<>();
+        for(int i =0;i<2;i++){
+            Future<?> submit = executorService.submit(new MyRunner(i + 1000, asyncCassandraOperations, 2, 2, events, epochStartTime + 5000));
+            submitList.add(submit);
 
-            resultList.add(booleanFuture);
         }
-
-        for(Future<Boolean> result:resultList){
-            result.get();
+        for(Future<?> future:submitList){
+            future.get();
         }
-
+//        for(int i=0;i<1;i++) {
+//            Future<Boolean> booleanFuture = asyncCassandraOperations.sendAsyncBatch("XXX_" + i, events, epochStartTime += 500);
+//
+//            resultList.add(booleanFuture);
+//        }
+//
+//        for(Future<Boolean> result:resultList){
+//            result.get();
+//        }
+//
         long endTime = System.currentTimeMillis();
         System.out.println(endTime-startTime);
         System.out.println("Hurray");
+    }
+}
+  class MyRunner implements Runnable{
+
+    private int serialNumberToStart ;
+    private AsyncCassandraOperations asyncCassandraOperations;
+    private int numOfTimes;
+    private int batchSize;
+    private String event;
+    private long timeStampToStart;
+
+    MyRunner( int serialNumberToStart, AsyncCassandraOperations asyncCassandraOperations, int numOfTimes, int batchSize, String event, long timeStampToStart){
+
+
+        this.serialNumberToStart = serialNumberToStart;
+        this.asyncCassandraOperations = asyncCassandraOperations;
+        this.numOfTimes = numOfTimes;
+        this.batchSize = batchSize;
+        this.event = event;
+        this.timeStampToStart = timeStampToStart;
+    }
+    @Override
+    public void run(){
+        for(int i=0;i<numOfTimes;i++){
+            try {
+                Future<Boolean> booleanFuture = asyncCassandraOperations.callBatchAsync(batchSize, serialNumberToStart, event, timeStampToStart);
+                booleanFuture.get();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
