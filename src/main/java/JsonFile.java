@@ -1,4 +1,4 @@
-import co.mimosa.cassandra.config.NMSBackendConfig;
+import co.mimosa.cassandra.config.NMSKafkaConfig;
 import co.mimosa.cassandra.model.RawMetrics;
 import co.mimosa.cassandra.parser.PhystatsParser;
 import com.google.common.base.Charsets;
@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class JsonFile {
     public static void main(String[] args) throws IOException {
-        ApplicationContext ctx = new AnnotationConfigApplicationContext(NMSBackendConfig.class);
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(NMSKafkaConfig.class);
         CassandraOperations operations= ctx.getBean(CassandraOperations.class);
         PhystatsParser phystatsParser = ctx.getBean(PhystatsParser.class);
         URL url = Resources.getResource("Phystats_2.json");

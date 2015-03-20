@@ -1,5 +1,5 @@
 import co.mimosa.cassandra.AsyncCassandraOperations;
-import co.mimosa.cassandra.config.NMSBackendConfig;
+import co.mimosa.cassandra.config.NMSKafkaConfig;
 import co.mimosa.cassandra.parser.PhystatsParser;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
@@ -21,11 +21,14 @@ import java.util.concurrent.Future;
  */
 public class LoadTest {
     public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
-        ApplicationContext ctx = new AnnotationConfigApplicationContext(NMSBackendConfig.class);
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(NMSKafkaConfig.class);
         CassandraOperations operations= ctx.getBean(CassandraOperations.class);
         PhystatsParser phystatsParser = ctx.getBean(PhystatsParser.class);
         AsyncCassandraOperations asyncCassandraOperations = ctx.getBean(AsyncCassandraOperations.class);
         URL url = Resources.getResource("Phystats.json");
+        int threads= Integer.parseInt(args[0]);
+        int threadBatch= Integer.parseInt(args[1]);
+        int batchNumber= Integer.parseInt(args[2]);
         String text = Resources.toString(url, Charsets.UTF_8);
         //System.out.println(text);
         long epochStartTime = 1395201980;
@@ -35,8 +38,8 @@ public class LoadTest {
         long startTime = System.currentTimeMillis();
         List<Future<?>> submitList = new ArrayList<>();
         int serialNumber =1000000;
-        for(int i =0;i<10;i++){
-            Future<?> submit = executorService.submit(new MyRunner( serialNumber , asyncCassandraOperations, 10, 1000, events, epochStartTime + 5000));
+        for(int i =0;i<threads;i++){
+            Future<?> submit = executorService.submit(new MyRunner( serialNumber , asyncCassandraOperations, threadBatch, batchNumber, events, epochStartTime + 5000));
             submitList.add(submit);
             serialNumber +=serialNumber;
 

@@ -1,0 +1,59 @@
+CREATE KEYSPACE pocdb1 WITH placement_strategy = 'org.apache.cassandra.locator.SimpleStrategy' AND strategy_options = {replication_factor:3};
+
+CREATE KEYSPACE pocdb
+WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 };
+
+CREATE TABLE raw_metrics (
+   serialNumber text,
+   event_time timestamp,
+   data map<text,text>,
+   PRIMARY KEY (serialNumber,event_time)
+);
+CREATE TABLE raw_metrics (
+   serialNumber text,
+   metricName text
+   event_time bigint,
+   data map<text,double>,
+   PRIMARY KEY (serialNumber,event_time)
+);
+
+CREATE TABLE raw_metrics (
+   serialNumber text,
+   metricName text,
+   eventTime bigint,
+    rxpkts    double ,
+ rxbytes   double,
+ rxgain    double,
+ crc       double,
+ noise     double,
+ noise2    double,
+ txpkts    double,
+ txbytes   double,
+ txdefers  double ,
+ txtouts   double ,
+ txretries double ,
+ txfails   double,
+ sp_err    double ,
+ lp_err    double ,
+ txrate    double ,
+ txstreams double  ,
+ txmcs     double  ,
+ rxrate    double  ,
+ rxstreams double  ,
+ rxmcs     double ,
+ evm_0     double ,
+ evm_1      double ,
+ evm_2     double ,
+ evm_3     double ,
+ rssi_0    double,
+ rssi_1    double ,
+ rssi_2    double,
+ rssi_3   double  ,
+ temp      double,
+ gps_gear  double,
+ gps_sats  double ,
+  per     double,
+     bw double,
+   PRIMARY KEY (serialNumber,metricName,eventTime)
+);
+

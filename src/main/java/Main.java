@@ -1,21 +1,14 @@
-import co.mimosa.cassandra.config.NMSBackendConfig;
-import co.mimosa.cassandra.model.Metrics;
-import co.mimosa.cassandra.model.RawMetrics;
-import co.mimosa.cassandra.repository.RawMetricsRepository;
-import org.springframework.cassandra.core.CqlOperations;
+import co.mimosa.cassandra.config.NMSKafkaConfig;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.cassandra.core.CassandraOperations;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by ramdurga on 3/18/15.
  */
 public class Main {
     public static void main(String[] args) {
-        ApplicationContext ctx = new AnnotationConfigApplicationContext(NMSBackendConfig.class);
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(NMSKafkaConfig.class);
        // CqlOperations cqlOperations = ctx.getBean(CqlOperations.class);
         CassandraOperations operations= ctx.getBean(CassandraOperations.class);
         //RawMetricsRepository repository = ctx.getBean(RawMetricsRepository.class);

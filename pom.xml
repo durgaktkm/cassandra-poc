@@ -19,6 +19,11 @@
         <jackson.version>1.9.12</jackson.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>co.mimosa.kafka.core</groupId>
+            <artifactId>kafka-consumer-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     <dependency>
         <groupId>org.powermock</groupId>
         <artifactId>powermock-module-junit4</artifactId>
