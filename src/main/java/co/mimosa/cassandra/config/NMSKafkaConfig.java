@@ -1,9 +1,11 @@
 package co.mimosa.cassandra.config;
 
 import co.mimosa.cassandra.AsyncCassandraOperations;
+import co.mimosa.cassandra.kafka.KafkaEventAnalyzer;
 import co.mimosa.cassandra.parser.PhystatsParser;
 import co.mimosa.cassandra.repository.RawMetricsRepository;
 import co.mimosa.kafka.config.CoreConsumerConfig;
+import co.mimosa.kafka.consumer.KafkaMultiThreadedConsumer;
 import co.mimosa.kafka.producer.MimosaProducer;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.S3ClientOptions;
@@ -41,7 +43,7 @@ import java.util.concurrent.Executor;
  * Created by ramdurga on 3/18/15.
  */
 @Configuration
-@PropertySource(value = { "classpath:cassandra.properties","file:cassandra_override.properties" })
+@PropertySource(value = { "classpath:cassandra.properties","file:cassandra_override.properties"}, ignoreResourceNotFound = true )
 @EnableCassandraRepositories(basePackages = { "co.mimosa.cassandra" })
 //@EnableJpaRepositories("co.mimosa.cassandra.repository")
 //@EnableJpaRepositories
@@ -171,6 +173,24 @@ public class NMSKafkaConfig {
         coreConsumerConfig.setZookeeperSessionTimeOutMs(env.getProperty("zookeeperSessionTimeOutMs"));
         coreConsumerConfig.setZookeeperSyncTimeMs(env.getProperty("zookeeperSyncTimeMs"));
         return coreConsumerConfig;
+    }
+    @Bean
+    public KafkaEventAnalyzer kafkaEventAnalyzer(){
+        KafkaEventAnalyzer kafkaEventAnalyzer = new KafkaEventAnalyzer(env.getProperty("NEWLINE_REPLACEMENT"),env.getProperty("DIR_SEPARATOR"),objectMapper(),mimosaProducer(),env.getProperty("errorTopic"));
+        return kafkaEventAnalyzer;
+    }
+    @Bean
+    public KafkaMultiThreadedConsumer kafkaMultiThreadedConsumer(){
+        KafkaMultiThreadedConsumer kafkaMultiThreadedConsumer = new KafkaMultiThreadedConsumer();
+        kafkaMultiThreadedConsumer.setTopic(env.getProperty("topic"));
+        kafkaMultiThreadedConsumer.setCoreConsumerConfig(coreConsumerConfig());
+        kafkaMultiThreadedConsumer.setEventAnalyzer(kafkaEventAnalyzer());
+        kafkaMultiThreadedConsumer.setExecutorService(taskExecutor());
+        kafkaMultiThreadedConsumer.setGroupId(env.getProperty("groupId"));
+        kafkaMultiThreadedConsumer.setPhase(Integer.parseInt(env.getProperty("phase")));
+        kafkaMultiThreadedConsumer.setNumThreads(env.getProperty("kafka.core.pool.size.deviceData"));
+        kafkaMultiThreadedConsumer.setZookeeperConnection(env.getProperty("zookeeperConnection"));
+        return kafkaMultiThreadedConsumer;
     }
 
 
