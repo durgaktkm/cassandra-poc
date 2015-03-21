@@ -24,21 +24,21 @@ public class JsonFile {
         String text = Resources.toString(url, Charsets.UTF_8);
         //System.out.println(text);
         String events = phystatsParser.parseJson(text).asText();
-        List<RawMetrics> rawMetricsList = phystatsParser.getRawMetrics("xx123", events);
-        String cqlIngest = "insert into raw_metrics(serialNumber,eventTime,metricName,key,value)values(?,?,?,?,?)";
-        List<List<?>> metricsToSave = new ArrayList<List<?>>();
-        List<Object> intermediateObject = null;
-        for(RawMetrics rawMetrics:rawMetricsList){
-            intermediateObject= new ArrayList<>();
-            intermediateObject.add(rawMetrics.getMetrics().getSerialNumber());
-            intermediateObject.add(rawMetrics.getMetrics().getEventTime());
-            intermediateObject.add("Phystats");
-
-//            intermediateObject.add(rawMetrics.getKey());
-//            intermediateObject.add(rawMetrics.getValue());
-            metricsToSave.add(intermediateObject);
-        }
-        operations.ingest(cqlIngest,metricsToSave);
-        System.out.println("Hurray");
+//        List<RawMetrics> rawMetricsList = phystatsParser.getRawMetrics("xx123", events);
+//        String cqlIngest = "insert into raw_metrics(serialNumber,eventTime,metricName,key,value)values(?,?,?,?,?)";
+//        List<List<?>> metricsToSave = new ArrayList<List<?>>();
+//        List<Object> intermediateObject = null;
+//        for(RawMetrics rawMetrics:rawMetricsList){
+//            intermediateObject= new ArrayList<>();
+//            intermediateObject.add(rawMetrics.getMetrics().getSerialNumber());
+//            intermediateObject.add(rawMetrics.getMetrics().getEventTime());
+//            intermediateObject.add("Phystats");
+//
+////            intermediateObject.add(rawMetrics.getKey());
+////            intermediateObject.add(rawMetrics.getValue());
+//            metricsToSave.add(intermediateObject);
+//        }
+//        operations.ingest(cqlIngest,metricsToSave);
+//        System.out.println("Hurray");
     }
 }

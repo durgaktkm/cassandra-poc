@@ -94,10 +94,7 @@ public class NMSKafkaConfig {
     public CassandraOperations cassandraOperations() throws Exception {
         return new CassandraTemplate(session().getObject());
     }
-    @Bean
-    public PhystatsParser getPhystatsParser() throws Exception {
-        return new PhystatsParser();
-    }
+
     @Bean
     public AsyncCassandraOperations getAsyncCassandraSave() throws Exception {
         return new AsyncCassandraOperations();
@@ -129,6 +126,10 @@ public class NMSKafkaConfig {
     @Bean
     public ObjectMapper objectMapper(){
        return new ObjectMapper();
+    }
+    @Bean
+    public PhystatsParser phystatsParser(){
+        return new PhystatsParser();
     }
 
     @Bean
@@ -175,8 +176,12 @@ public class NMSKafkaConfig {
         return coreConsumerConfig;
     }
     @Bean
+    public AsyncCassandraOperations asyncCassandraOperations(){
+        return new AsyncCassandraOperations();
+    }
+    @Bean
     public KafkaEventAnalyzer kafkaEventAnalyzer(){
-        KafkaEventAnalyzer kafkaEventAnalyzer = new KafkaEventAnalyzer(env.getProperty("NEWLINE_REPLACEMENT"),env.getProperty("DIR_SEPARATOR"),objectMapper(),mimosaProducer(),env.getProperty("errorTopic"));
+        KafkaEventAnalyzer kafkaEventAnalyzer = new KafkaEventAnalyzer(env.getProperty("NEWLINE_REPLACEMENT"),env.getProperty("DIR_SEPARATOR"),objectMapper(),mimosaProducer(),env.getProperty("errorTopic"),phystatsParser(),asyncCassandraOperations());
         return kafkaEventAnalyzer;
     }
     @Bean
