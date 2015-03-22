@@ -5,6 +5,7 @@ import co.mimosa.cassandra.parser.PhystatsParser;
 import co.mimosa.kafka.callable.IEventAnalyzer;
 import co.mimosa.kafka.producer.MimosaProducer;
 import co.mimosa.kafka.valueobjects.GateWayData;
+import com.amazonaws.util.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -55,16 +56,17 @@ public class KafkaEventAnalyzer implements IEventAnalyzer {
             try {
                 eventType = getMatchingString(EVENT_TYPE_PATTERN, eventJsonString);
                 if(eventType.equalsIgnoreCase("Phystats")){
-                    JsonNode jsonNode = objectMapper.readTree(eventJsonString).get("event").get("mimosaContent").get("content").get("values").get("phystats");
-                    if(jsonNode != null){
-                        rawMetrics = phystatsParser.getRawMetrics(serialNumber, jsonNode.asText());
+                    String event = objectMapper.readTree(eventJsonString).get("event").get("mimosaContent").get("content").get("values").get("phystats").asText();
+                    if(!StringUtils.isNullOrEmpty(event)){
+                        rawMetrics = phystatsParser.getRawMetrics(serialNumber, event);
                     }else{
                         logger.error("Json node is null, there is issue with input data");
                     }
                 }
             } catch (Exception e) {
 
-                    logger.error("Parsing error , data issue");
+                    logger.error("Parsing error , data issue: "+e.getMessage());
+                return false;
 
             }
 
@@ -73,6 +75,7 @@ public class KafkaEventAnalyzer implements IEventAnalyzer {
 
             } catch (Exception e) {
                 logger.error("Error while Saving to Cassandra" + e.getMessage());
+                return false;
             }
         }else{
             logger.error("It is file data, shouldn't be here for POC");

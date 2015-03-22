@@ -1,4 +1,5 @@
 import co.mimosa.cassandra.AsyncCassandraOperations;
+import co.mimosa.cassandra.config.NMSBackendConfig;
 import co.mimosa.cassandra.config.NMSKafkaConfig;
 import co.mimosa.cassandra.parser.PhystatsParser;
 import com.google.common.base.Charsets;
@@ -21,7 +22,7 @@ import java.util.concurrent.Future;
  */
 public class LoadTest {
     public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
-        ApplicationContext ctx = new AnnotationConfigApplicationContext(NMSKafkaConfig.class);
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(NMSBackendConfig.class);
         CassandraOperations operations= ctx.getBean(CassandraOperations.class);
         PhystatsParser phystatsParser = ctx.getBean(PhystatsParser.class);
         AsyncCassandraOperations asyncCassandraOperations = ctx.getBean(AsyncCassandraOperations.class);

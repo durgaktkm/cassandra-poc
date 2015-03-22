@@ -10,6 +10,7 @@ import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,12 @@ public class AsyncCassandraOperations {
     CassandraOperations operations;
     @Autowired
     CassandraClusterFactoryBean cluster;
+    PreparedStatement ps ;
+    @PostConstruct
+    public void afterObjectCreation(){
+        ps = operations.getSession().prepare("insert into raw_metrics(serialNumber,eventTime,metricName,rxpkts,rxbytes,rxgain,crc,noise,noise2,txpkts,txbytes,txdefers,txtouts,txretries,txfails,sp_err,lp_err,txrate,txstreams,txmcs,rxrate,rxstreams,rxmcs,evm_0,evm_1,evm_2,evm_3,rssi_0,rssi_1,rssi_2,rssi_3,temp,gps_gear,gps_sats,per,bw)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) using TTL 300");
 
+    }
     @Async
     public Future<Boolean> sendAsync(String serialNumber, String events, long timeStamp)
             throws InterruptedException, IOException {
@@ -56,7 +62,6 @@ public class AsyncCassandraOperations {
             throws InterruptedException, IOException {
         Session session = operations.getSession();
 
-        PreparedStatement ps = session.prepare("insert into raw_metrics(serialNumber,eventTime,metricName,rxpkts,rxbytes,rxgain,crc,noise,noise2,txpkts,txbytes,txdefers,txtouts,txretries,txfails,sp_err,lp_err,txrate,txstreams,txmcs,rxrate,rxstreams,rxmcs,evm_0,evm_1,evm_2,evm_3,rssi_0,rssi_1,rssi_2,rssi_3,temp,gps_gear,gps_sats,per,bw)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) using TTL 300");
         BatchStatement batch = new BatchStatement();
         for (Map<String,Double> rawMetrics : rawMetricsList) {
             batch.add(ps.bind(serialNumber,rawMetrics.get("timeStamp").longValue(), "Phystats",rawMetrics.get("rxpkts"),rawMetrics.get("rxbytes"),rawMetrics.get("rxgain"),rawMetrics.get("crc"),rawMetrics.get("noise"),rawMetrics.get("noise2"),rawMetrics.get("txpkts"),rawMetrics.get("txbytes"),rawMetrics.get("txdefers"),rawMetrics.get("txtouts"),rawMetrics.get("txretries"),rawMetrics.get("txfails"),rawMetrics.get("sp_err"),rawMetrics.get("lp_err"),rawMetrics.get("txrate"),rawMetrics.get("txstreams"),rawMetrics.get("txmcs"),rawMetrics.get("rxrate"),rawMetrics.get("rxstreams"),rawMetrics.get("rxmcs"),rawMetrics.get("evm_0"),rawMetrics.get("evm_1"),rawMetrics.get("evm_2"),rawMetrics.get("evm_3"),rawMetrics.get("rssi_0"),rawMetrics.get("rssi_1"),rawMetrics.get("rssi_2"),rawMetrics.get("rssi_3"),rawMetrics.get("temp"),rawMetrics.get("gps_gear"),rawMetrics.get("gps_sats"),rawMetrics.get("per"),rawMetrics.get("bw")));
@@ -67,7 +72,7 @@ public class AsyncCassandraOperations {
         System.out.println("Done running...");
         return new AsyncResult<>(true);
     }
-    @Async
+
     public Future<Boolean> sendAsyncBatch(String serialNumber, String events, long timeStamp)
             throws InterruptedException, IOException {
         boolean result = false;
@@ -86,7 +91,7 @@ public class AsyncCassandraOperations {
         System.out.println("Done running...");
         return new AsyncResult<>(result);
     }
-    @Async
+
     public Future<Boolean> callBatchAsync(int batchSize,int serialNumber, String events, long timeStamp) throws IOException, InterruptedException, ExecutionException {
         List<Future<Boolean>> resultList = new ArrayList<>();
         for(int i=0;i<batchSize;i++) {

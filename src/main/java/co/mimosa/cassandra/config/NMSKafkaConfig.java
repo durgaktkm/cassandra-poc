@@ -95,10 +95,7 @@ public class NMSKafkaConfig {
         return new CassandraTemplate(session().getObject());
     }
 
-    @Bean
-    public AsyncCassandraOperations getAsyncCassandraSave() throws Exception {
-        return new AsyncCassandraOperations();
-    }
+
 
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

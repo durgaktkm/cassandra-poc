@@ -41,23 +41,24 @@ public class PhystatsParser {
         String[] topNames = topSplits[0].trim().split("\\s+");
         String[] values = topSplits[1].trim().split("#");
         for(String s:values){
-            String[] valueSplits = s.split(":");
-            String[] actualValues = valueSplits[1].trim().split("\\s+");
-            resultMap = new HashMap<>();
-            resultMap.put("timeStamp", Double.parseDouble(valueSplits[0]));
-            for(int i =0;i <topNames.length; i++) {
+            if(!s.trim().isEmpty()) {
+                String[] valueSplits = s.trim().split(":");
+                String[] actualValues = valueSplits[1].trim().split("\\s+");
+                resultMap = new HashMap<>();
+                resultMap.put("timeStamp", Double.parseDouble(valueSplits[0].trim()));
+                for (int i = 0; i < topNames.length; i++) {
 
-                if (actualValues[i].equalsIgnoreCase("nan")) {
-                    resultMap.put(topNames[i], Double.NaN);
+                    if (actualValues[i].equalsIgnoreCase("nan")) {
+                        resultMap.put(topNames[i], Double.NaN);
 
-                } else {
-                    resultMap.put(topNames[i], Double.parseDouble(actualValues[i]));
+                    } else {
+                        resultMap.put(topNames[i], Double.parseDouble(actualValues[i]));
+
+                    }
 
                 }
-
+                rawMetricsList.add(resultMap);
             }
-            rawMetricsList.add(resultMap);
-
         }
         return rawMetricsList;
     }
